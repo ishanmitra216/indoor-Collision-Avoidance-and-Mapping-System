@@ -1,0 +1,5 @@
+database:
+  type: sqlite
+  name: robot.db
+  auto_migrate: true
+  logging: true

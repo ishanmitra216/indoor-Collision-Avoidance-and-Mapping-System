@@ -1,0 +1,11 @@
+camera:
+  device_id: 0
+  width: 640
+  height: 480
+  fps: 30
+
+  focal_length: 718.856
+  cx: 320
+  cy: 240
+
+  distortion_coefficients: [0, 0, 0, 0, 0]

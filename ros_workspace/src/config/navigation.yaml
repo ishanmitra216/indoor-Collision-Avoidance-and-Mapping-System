@@ -1,0 +1,3 @@
+navigation:
+  speed: 0.3
+  obstacle_threshold: 0.5

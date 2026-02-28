@@ -1,0 +1,3 @@
+<launch>
+  <node pkg="jetbot_navigation" type="camera_node.py" name="camera_node"/>
+</launch>

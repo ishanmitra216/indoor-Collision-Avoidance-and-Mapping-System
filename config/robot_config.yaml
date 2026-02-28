@@ -1,0 +1,7 @@
+robot:
+  wheel_base: 0.1
+  max_linear_speed: 0.5
+  max_angular_speed: 2.0
+
+  safe_distance: 0.5
+  emergency_timeout: 2.0

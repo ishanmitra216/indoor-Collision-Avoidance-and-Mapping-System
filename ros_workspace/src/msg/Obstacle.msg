@@ -1,0 +1,2 @@
+bool detected
+float64 distance

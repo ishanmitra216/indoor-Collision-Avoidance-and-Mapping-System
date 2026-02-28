@@ -1,0 +1,10 @@
+visual_odometry:
+  n_features: 2000
+  scale_factor: 1.2
+  levels: 8
+
+  ransac_threshold: 1.0
+  min_matches: 10
+
+  focal_length: 718.856
+  principal_point: [320, 240]
