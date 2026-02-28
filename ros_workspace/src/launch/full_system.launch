@@ -1,0 +1,9 @@
+<launch>
+  <node pkg="jetbot_navigation" type="camera_node.py" name="camera_node"/>
+  <node pkg="jetbot_navigation" type="vo_node.py" name="vo_node"/>
+  <node pkg="jetbot_navigation" type="mapping_node.py" name="mapping_node"/>
+  <node pkg="jetbot_navigation" type="collision_node.py" name="collision_node"/>
+  <node pkg="jetbot_navigation" type="motor_node.py" name="motor_node"/>
+  <node pkg="jetbot_navigation" type="database_node.py" name="database_node"/>
+  <node pkg="jetbot_navigation" type="tf_node.py" name="tf_node"/>
+</launch>

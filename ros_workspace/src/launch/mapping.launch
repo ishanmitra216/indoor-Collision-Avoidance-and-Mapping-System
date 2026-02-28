@@ -1,0 +1,3 @@
+<launch>
+  <node pkg="jetbot_navigation" type="mapping_node.py" name="mapping_node"/>
+</launch>
