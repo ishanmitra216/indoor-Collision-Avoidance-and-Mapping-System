@@ -1,0 +1,4 @@
+<launch>
+  <node pkg="jetbot_navigation" type="vo_node.py" name="vo_node"/>
+  <node pkg="jetbot_navigation" type="collision_node.py" name="collision_node"/>
+</launch>

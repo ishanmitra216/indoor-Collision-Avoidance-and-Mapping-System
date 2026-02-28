@@ -1,0 +1,15 @@
+
+---
+
+# 2️⃣ requirements.txt
+
+```text
+opencv-python
+numpy
+fastapi
+uvicorn
+sqlite3
+pydantic
+pyyaml
+matplotlib
+requests

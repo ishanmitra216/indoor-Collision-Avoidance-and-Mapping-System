@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>JetBot Navigation Dashboard</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<h1>🚀 JetBot Indoor Navigation Dashboard</h1>
+
+<div class="card">
+    <h2>Robot State</h2>
+    <div id="robot-state"></div>
+</div>
+
+<div class="card">
+    <h2>Collision Status</h2>
+    <div id="collision-status"></div>
+</div>
+
+<div class="card">
+    <h2>Quick Links</h2>
+    <a href="pose.html">View Pose</a><br>
+    <a href="map.html">View Map</a>
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/visualization.js"></script>
+
+<script>
+    setInterval(updateRobotState, 1000);
+    setInterval(updateCollisionStatus, 1000);
+</script>
+
+</body>
+</html>
