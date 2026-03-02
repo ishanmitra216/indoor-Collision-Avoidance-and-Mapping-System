@@ -9,6 +9,10 @@
 AMC Engineering College, VTU  
 (Visvesvaraya Technological University)
 
+<span style="color:#1F618D;"><strong>GopiMohan Mukherjee</strong></span>  
+AMC Engineering College, VTU  
+(Visvesvaraya Technological University)
+
 <span style="color:#7D3C98;"><strong>Srikanth Nanda</strong></span>  
 Hochschule Emden/Leer  
 University of Applied Sciences
