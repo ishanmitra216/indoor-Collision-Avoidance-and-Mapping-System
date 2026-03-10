@@ -158,6 +158,70 @@ ROS Melodic
 
 ---
 
+# 🤖 Running the System (cross‑platform)
+
+A set of helper scripts support both Linux (Ubuntu 24, etc.) and Windows
+environments:
+
+* `setup.py` – installs Python requirements, optionally builds a ROS workspace,
+  and initializes the database.
+* `launch/manage.py` – start or stop all modules with `python launch/manage.py
+  start` / `stop`.  (The original `launch/*.sh` helpers continue to exist for
+  Unix shells.)
+
+On Windows run these commands from PowerShell or Command Prompt; on Linux/macOS
+use bash, zsh, etc.  The Python script uses the current interpreter (`sys.executable`)
+so virtual environments are respected.  Windows users can also execute the
+`launch\start_all.ps1` and `launch\stop_all.ps1` helpers directly from PowerShell.
+
+Example:
+
+```bash
+python setup.py                  # or "py setup.py" on Windows
+python launch/manage.py start
+# open http://localhost:8080 for dashboard, API on port 8000
+python launch/manage.py stop    # shuts everything down
+```
+
+
+
+## 🧩 GUI Control Panel
+A very simple Tkinter‑based GUI (`gui/app.py`) provides **Start All** / **Stop All**
+buttons and a small log window; it invokes the same `launch/manage.py` launcher.
+Run it with:
+
+```bash
+python gui/app.py          # works on any OS with a display
+``` 
+
+It’s shipped as part of the repo and requires no extra dependencies beyond the
+standard library.
+
+## 🐋 Container support (Docker)
+Two ways to run the system in containers:
+
+1. **Single container** – build the top‑level `Dockerfile` and let it launch all
+   components when started.  Example:
+   ```bash
+   docker build -t indoor-nav .
+   docker run -it --rm \
+     -p 8000:8000 -p 8080:8080 \
+     --device /dev/video0:/dev/video0 \
+     indoor-nav
+   ```
+
+2. **Microservices with docker‑compose** – each module runs in its own service.
+   ```bash
+   docker-compose up --build
+   ```
+   The compose file also includes a `gui` service (requires X11/Wayland
+   forwarding or `--network host`).
+
+Ports 8000 and 8080 are published for the API and dashboard.  Adjust volumes
+and device mappings as needed for your camera.
+
+---
+
 # <span style="color:#7D3C98;">8. Expected Output</span>
 
 ## <span style="color:#148F77;">Top View</span>

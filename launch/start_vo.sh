@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Unix-only helper; the Python launcher (`python launch/manage.py start`)
+# will also start this module on any platform.
+
 echo "Starting Visual Odometry..."
 
 cd ../visual_odometry
