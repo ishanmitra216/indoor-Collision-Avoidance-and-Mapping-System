@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Unix-only launcher – see `python launch/manage.py` for a cross-platform
+# (Windows/Linux/macOS) alternative that uses the same Python interpreter.
+
 echo "====================================="
 echo " Starting JetBot Indoor Navigation "
 echo "====================================="

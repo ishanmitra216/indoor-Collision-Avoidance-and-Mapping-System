@@ -1,0 +1,43 @@
+version: "3.8"
+
+services:
+  vo:
+    build: .
+    command: ["python", "visual_odometry/vo_main.py"]
+    volumes:
+      - .:/app
+    devices:
+      - "/dev/video0:/dev/video0"  # pass through camera if available
+
+  mapping:
+    build: .
+    command: ["python", "mapping/grid_mapper.py"]
+    volumes:
+      - .:/app
+
+  api:
+    build: .
+    command: ["python", "-m", "uvicorn", "api_server.main:app", "--host", "0.0.0.0", "--port", "8000"]
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+
+  dashboard:
+    build: .
+    command: ["python", "-m", "http.server", "8080"]
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/app
+
+  gui:
+    build: .
+    command: ["python", "gui/app.py"]
+    volumes:
+      - .:/app
+    environment:
+      - DISPLAY=${DISPLAY}
+    network_mode: "host"
+    # GUI may require additional privileges depending on platform
+    privileged: true

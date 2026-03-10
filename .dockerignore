@@ -1,0 +1,9 @@
+# Exclude Python caches and git metadata
+__pycache__
+*.pyc
+*.pyo
+.git
+.gitignore
+.env
+.launch/*.pid
+logs/

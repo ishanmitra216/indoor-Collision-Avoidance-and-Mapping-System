@@ -1,9 +1,3 @@
-
----
-
-# 2️⃣ requirements.txt
-
-```text
 opencv-python
 numpy
 fastapi

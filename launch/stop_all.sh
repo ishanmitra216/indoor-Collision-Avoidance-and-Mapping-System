@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Unix-only stopper – use `python launch/manage.py stop` on any platform to
+# terminate all modules.
+
 echo "Stopping all services..."
 
 if [ -f vo.pid ]; then
