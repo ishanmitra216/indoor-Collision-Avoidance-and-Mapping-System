@@ -22,7 +22,20 @@ def install_requirements():
     if not os.path.exists(req_file):
         print("requirements.txt not found, skipping dependency installation.")
         return
-    run([sys.executable, "-m", "pip", "install", "-r", req_file])
+
+    try:
+        import pip  # noqa: F401
+    except ImportError:
+        try:
+            run([sys.executable, "-m", "ensurepip", "--upgrade"])
+        except subprocess.CalledProcessError:
+            print("pip is not available and could not be bootstrapped; skipping dependency installation.")
+            return
+
+    try:
+        run([sys.executable, "-m", "pip", "install", "-r", req_file])
+    except subprocess.CalledProcessError:
+        print("Dependency installation failed; continuing setup so other steps can run.")
 
 
 def setup_ros_workspace():

@@ -7,7 +7,7 @@ echo "Starting Mapping Module..."
 
 cd ../mapping
 
-python3 grid_mapper.py &
+python3 mapping_main.py &
 
 MAP_PID=$!
 echo $MAP_PID > ../launch/mapping.pid

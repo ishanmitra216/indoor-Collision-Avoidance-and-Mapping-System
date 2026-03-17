@@ -19,6 +19,7 @@ import signal
 
 LAUNCH_DIR = os.path.dirname(os.path.abspath(__file__))
 ROOT_DIR = os.path.abspath(os.path.join(LAUNCH_DIR, os.pardir))
+LOG_DIR = os.path.join(LAUNCH_DIR, "logs")
 
 
 def write_pid(name, pid):
@@ -27,11 +28,65 @@ def write_pid(name, pid):
         f.write(str(pid))
 
 
+def remove_pid(name):
+    path = os.path.join(LAUNCH_DIR, f"{name}.pid")
+    try:
+        os.remove(path)
+    except OSError:
+        pass
+
+
 def start_process(label, cmd, cwd):
-    proc = subprocess.Popen(cmd, cwd=cwd)
+    os.makedirs(LOG_DIR, exist_ok=True)
+    log_path = os.path.join(LOG_DIR, f"{label}.log")
+    log_file = open(log_path, "a")
+
+    kwargs = {
+        "cwd": cwd,
+        "stdout": log_file,
+        "stderr": subprocess.STDOUT,
+    }
+    if os.name == 'nt':
+        kwargs["creationflags"] = subprocess.CREATE_NEW_PROCESS_GROUP
+    else:
+        kwargs["start_new_session"] = True
+
+    proc = subprocess.Popen(cmd, **kwargs)
+    log_file.close()
+    time.sleep(1)
+    if proc.poll() is not None:
+        remove_pid(label)
+        print(f"{label} failed to start (exit code {proc.returncode}). Check log: {log_path}")
+        return None
+
     write_pid(label, proc.pid)
-    print(f"{label} started with PID {proc.pid}")
+    print(f"{label} started with PID {proc.pid} (log: {log_path})")
     return proc
+
+
+def _pid_running(pid):
+    try:
+        os.kill(pid, 0)
+        return True
+    except OSError:
+        return False
+
+
+def _prune_dead_pids():
+    for name in ['vo', 'mapping', 'api', 'dashboard']:
+        pidfile = os.path.join(LAUNCH_DIR, f"{name}.pid")
+        if not os.path.exists(pidfile):
+            continue
+        try:
+            with open(pidfile) as f:
+                pid = int(f.read().strip())
+        except (OSError, ValueError):
+            remove_pid(name)
+            continue
+
+        if not _pid_running(pid):
+            remove_pid(name)
+            print(f"{name} exited shortly after startup; removed stale PID file.")
 
 
 def start_all():
@@ -39,10 +94,13 @@ def start_all():
     procs = {}
     os.chdir(ROOT_DIR)  # ensure paths are relative to repo root
 
+    for name in ['vo', 'mapping', 'api', 'dashboard']:
+        remove_pid(name)
+
     procs['vo'] = start_process('vo', [sys.executable, 'vo_main.py'], os.path.join(ROOT_DIR, 'visual_odometry'))
     time.sleep(2)
 
-    procs['mapping'] = start_process('mapping', [sys.executable, 'grid_mapper.py'], os.path.join(ROOT_DIR, 'mapping'))
+    procs['mapping'] = start_process('mapping', [sys.executable, 'mapping_main.py'], os.path.join(ROOT_DIR, 'mapping'))
     time.sleep(2)
 
     procs['api'] = start_process(
@@ -57,6 +115,11 @@ def start_all():
         [sys.executable, '-m', 'http.server', '8080'],
         os.path.join(ROOT_DIR, 'dashboard'),
     )
+    # Give short-lived processes (for example camera-dependent VO in headless envs)
+    # enough time to exit before pruning stale PID files.
+    time.sleep(3)
+    _prune_dead_pids()
+
     print("All modules launched.  Use Ctrl-C to quit or run `python launch/manage.py stop` later.")
     return procs
 

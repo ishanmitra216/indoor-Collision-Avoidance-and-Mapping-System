@@ -102,3 +102,26 @@ Color mapping in visualization:
 - `pose_matrix_to_xytheta` supports pipelines that output 4x4 transforms
 	(for example visual odometry outputs).
 - Map persistence default path is `mapping/saved_maps/map1.npy`.
+
+---
+
+## New: mapping_main.py – Long-Running Service Entrypoint
+
+Added `mapping_main.py` as the process-level entrypoint used by the launcher.
+`grid_mapper.py` is a **library module** and exits immediately when run directly;
+`mapping_main.py` wraps it in a run-loop and is what `launch/manage.py` and
+`launch/start_mapping.sh` now invoke.
+
+What it does:
+- Initializes a `GridMapper` with the robot at origin `(0, 0, 0)`.
+- Handles `SIGTERM` / `SIGINT` for clean shutdown.
+- Writes a live map snapshot to `saved_maps/map_live.npy` every second.
+- Runs until stopped by `launch/manage.py stop` or Ctrl-C.
+
+Run standalone (from repo root):
+
+```bash
+.venv/bin/python mapping/mapping_main.py
+```
+
+Live map output: `mapping/saved_maps/map_live.npy`
