@@ -25,7 +25,7 @@ Supported commands:
 
 Start order in code:
 1. Visual odometry (`visual_odometry/vo_main.py`)
-2. Mapping (`mapping/grid_mapper.py`)
+2. Mapping (`mapping/mapping_main.py`)
 3. API (`uvicorn main:app` in api_server)
 4. Dashboard (`python -m http.server 8080` in dashboard)
 
@@ -81,7 +81,7 @@ Starts visual odometry process:
 
 Starts mapping process:
 - Changes directory to mapping.
-- Runs `python3 grid_mapper.py` in background.
+- Runs `python3 mapping_main.py` in background.
 - Stores PID in `launch/mapping.pid`.
 
 ### start_api.sh
@@ -136,3 +136,41 @@ bash launch/stop_all.sh
 - Run commands from the project root for consistent relative paths.
 - If a service crashes, its PID file may remain and need manual cleanup.
 - API is served on port `8000`, dashboard on port `8080`.
+
+---
+
+## Recent Changes
+
+### manage.py Improvements
+
+**Service log files**
+Each module's stdout and stderr is now redirected to a dedicated file under
+`launch/logs/` instead of printing to the terminal:
+
+| Log file | Service |
+|----------|---------|
+| `launch/logs/vo.log` | Visual odometry |
+| `launch/logs/mapping.log` | Mapping service |
+| `launch/logs/api.log` | FastAPI / uvicorn |
+| `launch/logs/dashboard.log` | Static HTTP server |
+
+**Detached processes**
+Sub-processes now run in their own session (`start_new_session=True` on Linux;
+`CREATE_NEW_PROCESS_GROUP` on Windows).  Closing the terminal that ran
+`manage.py start` no longer kills the services.
+
+**Stale PID cleanup**
+After all services are started `manage.py` checks each PID and removes the file
+for any process that has already exited (for example VO when no camera is
+present).  This prevents `manage.py stop` from reporting spurious
+"failed to stop" errors.
+
+**No-crash reporting**
+When a service fails to start within the health window, the launcher prints a
+clear message (`<name> failed to start – check log`) and continues bringing up
+the remaining services instead of aborting.
+
+### start_mapping.sh
+
+Updated to call `mapping_main.py` (new long-running service entry) instead of
+`grid_mapper.py` (library module that exits immediately).

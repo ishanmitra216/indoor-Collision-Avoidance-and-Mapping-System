@@ -126,3 +126,27 @@ python database/migrations/init_db.py
 
 Insert and query are typically called by other project modules rather than
 manually from CLI.
+
+---
+
+## Recent Changes
+
+### migrations/init_db.py – Import Path Fix
+
+Fixed `ModuleNotFoundError: No module named 'db_manager'` that occurred when
+the migration script was run from a different working directory (for example via
+`setup.py` from the repo root).
+
+The script now prepends its parent directory (`database/`) to `sys.path` at
+startup:
+
+```python
+import sys, os
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+DATABASE_DIR = os.path.dirname(CURRENT_DIR)
+if DATABASE_DIR not in sys.path:
+    sys.path.insert(0, DATABASE_DIR)
+```
+
+This makes `from db_manager import DBManager` work regardless of the calling
+directory.

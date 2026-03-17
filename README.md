@@ -250,4 +250,87 @@ and device mappings as needed for your camera.
 - Smart building navigation  
 - Warehouse automation  
 - Educational robotics
-- 
+
+---
+
+# 🆕 10. Recent Additions & Fixes
+
+## Virtual Environment Setup
+
+A local `.venv` is now the recommended way to run this project on Ubuntu/Debian,
+where `pip` is not available for the system Python:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate      # Linux/macOS
+.venv\Scripts\activate         # Windows
+```
+
+Then run setup and launch with the venv interpreter:
+
+```bash
+.venv/bin/python setup.py
+.venv/bin/python launch/manage.py start
+```
+
+## requirements.txt
+
+Removed `sqlite3` – it is a Python standard-library module and is not a
+pip-installable package.  Installing it would cause `setup.py` to fail.
+
+## setup.py Improvements
+
+- Bootstraps `pip` via `ensurepip` when it is missing from the interpreter.
+- No longer hard-crashes when `pip` cannot be bootstrapped or when dependency
+  installation fails – remaining setup steps (ROS, DB init) continue.
+
+## database/migrations/init_db.py
+
+Fixed `ModuleNotFoundError: No module named 'db_manager'` when the migration
+script was run from `setup.py`.  The script now inserts the `database/` parent
+folder into `sys.path` at startup so imports resolve correctly regardless of
+calling directory.
+
+## Mapping Service (`mapping/mapping_main.py`) – NEW FILE
+
+Added a dedicated long-running mapping service entrypoint.  Previously the
+launcher pointed at `grid_mapper.py` which is a library module that exits
+immediately when run directly.
+
+What `mapping_main.py` does:
+
+- Creates and maintains a `GridMapper` instance.
+- Handles `SIGTERM` / `SIGINT` for graceful shutdown.
+- Writes a live map snapshot to `mapping/saved_maps/map_live.npy` every second.
+- Keeps running until stopped by `launch/manage.py stop` or Ctrl-C.
+
+## launch/manage.py Improvements
+
+- **Service log files** – each module's stdout+stderr is now redirected to
+  `launch/logs/<module>.log` instead of flooding the terminal.
+- **Detached processes** – sub-processes run in their own session (`start_new_session=True`
+  on Linux, `CREATE_NEW_PROCESS_GROUP` on Windows) so they are not killed when
+  the launcher terminal closes.
+- **Stale PID cleanup** – after startup, any process that has already exited
+  (for example VO in a headless/no-camera environment) has its PID file removed
+  automatically.
+- **Clean stop** – `stop` command now ignores missing PID files gracefully and
+  removes them after sending SIGTERM.
+
+## visual_odometry/vo_main.py
+
+Added an early exit guard: if `cv2.VideoCapture(0)` fails to open the camera,
+the script prints a clear message and exits immediately instead of looping with
+repeated OpenCV V4L2 and FFMPEG error spam.
+
+## Log Files
+
+All service runtime output is now captured under `launch/logs/`:
+
+| File | Contents |
+|------|----------|
+| `launch/logs/api.log` | uvicorn startup and request logs |
+| `launch/logs/dashboard.log` | HTTP server access log |
+| `launch/logs/mapping.log` | Mapping service heartbeat/errors |
+| `launch/logs/vo.log` | Visual odometry output/errors |
+

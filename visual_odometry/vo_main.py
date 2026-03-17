@@ -10,6 +10,9 @@ from utils.visualization import draw_trajectory
 def main():
 
     cap = cv2.VideoCapture(0)
+    if not cap.isOpened():
+        print("Camera device /dev/video0 is not available. Visual odometry will not start.")
+        return
 
     camera = CameraModel()
     orb = ORBDetector()

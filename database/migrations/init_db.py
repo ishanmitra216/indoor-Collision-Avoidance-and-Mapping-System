@@ -1,4 +1,11 @@
 import os
+import sys
+
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+DATABASE_DIR = os.path.dirname(CURRENT_DIR)
+if DATABASE_DIR not in sys.path:
+    sys.path.insert(0, DATABASE_DIR)
+
 from db_manager import DBManager
 
 def run_schema(file_path):

@@ -134,3 +134,25 @@ File/output helpers:
 - Current pipeline uses simple sequential matching and may need outlier
 	filtering/tuning for challenging scenes.
 
+---
+
+## Recent Changes
+
+### vo_main.py – Camera Guard
+
+Added an early-exit check immediately after `cv2.VideoCapture(0)` is opened:
+
+```python
+if not cap.isOpened():
+    print("Camera device /dev/video0 is not available. Visual odometry will not start.")
+    return
+```
+
+Previous behavior: when no camera was available the script fell into its main
+loop and emitted a continuous stream of V4L2 and FFMPEG error lines until
+killed.
+
+New behavior: exits immediately and cleanly with a single informative message.
+The launcher (`launch/manage.py`) treats the process as optional and removes the
+stale PID file so `manage.py stop` works correctly.
+
