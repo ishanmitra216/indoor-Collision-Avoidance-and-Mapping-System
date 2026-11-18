@@ -1,3 +1,4 @@
 {
-    "python-envs.defaultEnvManager": "ms-python.python:system"
+    "python-envs.defaultEnvManager": "ms-python.python:system",
+    "cmake.sourceDirectory": "C:/Users/ishan/Documents/GitHub/indoor-Collision-Avoidance-and-Mapping-System/ros_workspace/src/jetbot_navigation"
 }
